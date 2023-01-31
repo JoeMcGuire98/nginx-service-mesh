@@ -96,6 +96,9 @@ spec:
         image: {{ include "hook.image-server" . }}/kubectl
         imagePullPolicy: {{ .Values.registry.imagePullPolicy }}
         securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
           runAsUser: 101 #nginx
         command:
         - /bin/sh
@@ -130,6 +133,9 @@ spec:
         image: {{ include "hook.image-server" . }}/kubectl
         imagePullPolicy: {{ .Values.registry.imagePullPolicy }}
         securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
           runAsUser: 101 #nginx
         command:
         - /bin/sh
@@ -173,7 +179,7 @@ allowPrivilegedContainer: false
 seLinuxContext:
   type: MustRunAs
 runAsUser:
-  type: RunAsAny
+  type: MustRunAsNonRoot
 readOnlyRootFilesystem: false
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -305,6 +311,9 @@ spec:
         image: {{ include "hook.image-server" . }}/kubectl
         imagePullPolicy: {{ .Values.registry.imagePullPolicy }}
         securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
           runAsUser: 101 #nginx
         command:
         - /bin/sh

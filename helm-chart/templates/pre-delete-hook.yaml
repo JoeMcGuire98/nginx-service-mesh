@@ -66,6 +66,11 @@ spec:
       - name: turn-proxies-transparent
         image: {{ include "hook.image-server" . }}/kubectl
         imagePullPolicy: {{ .Values.registry.imagePullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
+          runAsUser: 101 #nginx
         command:
         - /bin/sh
         - -c
