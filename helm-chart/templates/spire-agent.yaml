@@ -65,6 +65,8 @@ spec:
       hostPID: true
       hostNetwork: true
       dnsPolicy: ClusterFirstWithHostNet
+      securityContext:
+        fsGroup: 101 #nginx
       initContainers:
       - name: init
         image: {{ include "curl.image-server" . }}/curl
@@ -76,14 +78,26 @@ spec:
           while $(curl -t 'DUMMY=1' -s telnet://spire-server:8081); [ $? -ne 48 ]; do
             sleep 1
           done
+      - name: chown-volume
+        image: busybox:latest
+        command: ["sh", "-c", "chown -R 101:101 /run/spire/sockets"]
+        volumeMounts:
+        - name: spire-agent-socket
+          mountPath: /run/spire/sockets
       containers:
       - name: spire-agent
         image: {{ include "spire.image-server" . }}/spire-agent:1.5.4
         imagePullPolicy: {{ .Values.registry.imagePullPolicy }}
+        securityContext:
+          allowPrivilegeEscalation: false
+          privileged: false
+          runAsUser: 101 #nginx
         args:
         - -config
         - /run/spire/config/agent.conf
         volumeMounts:
+        - name: spire-base
+          mountPath: /run/spire/
         - name: spire-config
           mountPath: /run/spire/config
           readOnly: true
@@ -115,6 +129,10 @@ spec:
       - name: spire-bundle
         configMap:
           name: spire-bundle
+      - name: spire-base
+        hostPath:
+          path: /run/spire/
+          type: DirectoryOrCreate
       - name: spire-agent-socket
         hostPath:
           path: /run/spire/sockets
@@ -171,7 +189,7 @@ seLinuxContext:
   type: MustRunAs
 readOnlyRootFilesystem: false
 runAsUser:
-  type: RunAsAny
+  type: MustRunAsNonRoot
 fsGroup:
   type: MustRunAs
 volumes:
