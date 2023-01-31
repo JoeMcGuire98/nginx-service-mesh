@@ -304,9 +304,7 @@ spec:
           readOnly: true
       volumes:
       - name: spire-base
-        hostPath:
-          path: /run/spire/
-          type: DirectoryOrCreate
+        emptyDir: {}
       - name: spire-config
         configMap:
           name: spire-server
