@@ -96,8 +96,6 @@ spec:
         - -config
         - /run/spire/config/agent.conf
         volumeMounts:
-        - name: spire-base
-          mountPath: /run/spire/
         - name: spire-config
           mountPath: /run/spire/config
           readOnly: true
@@ -129,10 +127,6 @@ spec:
       - name: spire-bundle
         configMap:
           name: spire-bundle
-      - name: spire-base
-        hostPath:
-          path: /run/spire/
-          type: DirectoryOrCreate
       - name: spire-agent-socket
         hostPath:
           path: /run/spire/sockets
