@@ -92,6 +92,7 @@ spec:
           allowPrivilegeEscalation: false
           privileged: false
           runAsUser: 101 #nginx
+          runAsNonRoot: true
         args:
         - -config
         - /run/spire/config/agent.conf
