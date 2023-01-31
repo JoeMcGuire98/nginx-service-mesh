@@ -96,6 +96,10 @@ spec:
         volumeMounts:
         - name: spire-agent-socket
           mountPath: /spire-agent-socket
+      securityContext:
+        fsGroup: 101
+        runAsNonRoot: true
+        runAsUser: 101 #nginx
       containers:
       - name: spiffe-csi-driver
         image: {{ include "spiffe-csi.image-server" . }}/spiffe-csi-driver:0.2.1
@@ -126,17 +130,23 @@ spec:
             mountPropagation: Bidirectional
             name: mountpoint-dir
         securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
           readOnlyRootFilesystem: true
           capabilities:
             drop:
             - all
-          privileged: true
       # This container runs the CSI Node Driver Registrar which takes care
       # of all the little details required to register a CSI driver with
       # the kubelet.
       - name: node-driver-registrar
         image: {{ include "node-driver.image-server" . }}/csi-node-driver-registrar:v2.7.0
         imagePullPolicy: {{ .Values.registry.imagePullPolicy }}
+        securityContext:
+          runAsNonRoot: true
+          allowPrivilegeEscalation: false
+          privileged: false
         args: [
           "-csi-address", "/spiffe-csi/csi.sock",
           "-kubelet-registration-path", "/var/lib/kubelet/plugins/csi.spiffe.io/csi.sock",
