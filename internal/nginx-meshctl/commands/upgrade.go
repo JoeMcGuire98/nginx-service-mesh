@@ -47,7 +47,7 @@ func Upgrade(version string) *cobra.Command {
 		}
 		if !semver.IsValid(version) {
 			return fmt.Errorf(
-				"upgrading NGINX service mesh failed: invalid version provided in meshctl binary : %v ",
+				"upgrading NGINX service mesh failed: invalid version provided by meshctl binary : %v ",
 				version,
 			)
 		}
