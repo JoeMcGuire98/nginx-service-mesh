@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"github.com/rogpeppe/go-internal/semver"
 	"strings"
 	"time"
 
@@ -43,6 +44,12 @@ func Upgrade(version string) *cobra.Command {
 		// Verify mesh install exists
 		if _, err := verifyMeshInstall(initK8sClient); err != nil {
 			return err
+		}
+		if !semver.IsValid(version) {
+			return fmt.Errorf(
+				"upgrading NGINX service mesh failed: invalid version provided in meshctl binary : %v ",
+				version,
+			)
 		}
 		if !yes {
 			msg := fmt.Sprintf("Preparing to upgrade NGINX Service Mesh in namespace \"%s\".", namespace)
